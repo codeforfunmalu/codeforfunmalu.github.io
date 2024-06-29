@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拍照應用程式</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="camera">
+        <video id="video" autoplay></video>
+        <div id="frame"></div>
+    </div>
+    <button id="capture">拍照</button>
+    <canvas id="snapshot" width="640" height="480" style="display:none;"></canvas>
+    <div id="result">
+        <img id="photo" src="" alt="拍照結果">
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
