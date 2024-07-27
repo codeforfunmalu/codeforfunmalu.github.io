@@ -1,0 +1,32 @@
+/* Global styles */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+/* Title styles */
+h1 {
+    margin-bottom: 20px;
+}
+
+/* Canvas styles */
+#canvas {
+    border: 1px solid black;
+    margin-top: 20px;
+}
+
+/* Button styles */
+button {
+    margin-top: 10px;
+}
+
+/* Output styles */
+#output {
+    margin-top: 20px;
+    font-size: 1.2em;
+}
