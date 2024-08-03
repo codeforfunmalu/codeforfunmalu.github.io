@@ -16,7 +16,7 @@ let points = [];
 let isDrawing = false;
 
 // 启动摄像头
-navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: 640, height: 480 } })
     .then(stream => {
         video.srcObject = stream;
         video.play();
