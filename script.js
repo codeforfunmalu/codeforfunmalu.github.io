@@ -12,7 +12,6 @@ const calibrationFrame = document.createElement('div');
 calibrationFrame.classList.add('calibration-frame');
 document.body.appendChild(calibrationFrame);
 
-let scale = null;
 let pixelsPerCm;
 let measuring = false;
 let points = [];
@@ -23,26 +22,33 @@ let undoneLines = [];
 navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
         video.srcObject = stream;
+        return video.play();  // 开始播放视频流
     })
     .catch(err => {
         console.error("Error accessing camera: ", err);
+        alert("Could not access the camera. Please check permissions.");
     });
 
 // 捕获图片并校准比例尺
 captureButton.addEventListener('click', () => {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0);
-    canvas.style.display = 'block';
-    video.style.display = 'none';
-    calibrationFrame.style.display = 'none';
+    // 确保视频已播放
+    if (video.readyState === 4) { // 4 means video is fully loaded
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0);
+        canvas.style.display = 'block';
+        video.style.display = 'none';
+        calibrationFrame.style.display = 'none';
 
-    // 假设校准框的实际大小是8.8cm x 6.5cm
-    const actualWidthCm = 8.8;
-    const frameWidthPx = calibrationFrame.clientWidth;
+        // 假设校准框的实际大小是8.8cm x 6.5cm
+        const actualWidthCm = 8.8;
+        const frameWidthPx = calibrationFrame.clientWidth;
 
-    pixelsPerCm = frameWidthPx / actualWidthCm;
-    alert('Scale calibrated. You can now measure areas.');
+        pixelsPerCm = frameWidthPx / actualWidthCm;
+        alert('Scale calibrated. You can now measure areas.');
+    } else {
+        alert("Video not ready. Please ensure your camera is functioning correctly.");
+    }
 });
 
 // 当用户点击测量区域按钮时触发
@@ -161,9 +167,7 @@ function drawLine(x1, y1, x2, y2) {
 // 重新绘制画布
 function redraw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (canvas.style.display === 'block') {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    }
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     lines.forEach(line => drawLine(line.start.x, line.start.y, line.end.x, line.end.y));
 }
 
