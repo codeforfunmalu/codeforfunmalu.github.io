@@ -22,8 +22,8 @@ video, #canvas {
 
 .calibration-frame {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 0;
+    left: 0;
     width: 176px; /* 按8.8 cm 的比例 */
     height: 130px; /* 按6.5 cm 的比例 */
     border: 2px solid #00FF00; /* 亮绿色 */
