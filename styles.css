@@ -15,7 +15,8 @@ h1 {
 
 #video-container {
     position: relative;
-    display: inline-block;
+    width: 100%;
+    height: auto;
 }
 
 video {
@@ -36,8 +37,6 @@ video {
 }
 
 #canvas {
-    width: 100%;
-    height: auto;
     display: none;
     border: 1px solid black;
 }
