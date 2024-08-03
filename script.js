@@ -33,12 +33,12 @@ captureButton.addEventListener('click', () => {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     video.style.display = 'none';
     canvas.style.display = 'block';
+    calibrationFrame.style.display = 'none';
 
     // 根据校准框的尺寸和实际尺寸计算每厘米的像素数
     const frameWidthCm = 8.8; // 实际板子的宽度
     const frameWidthPx = calibrationFrame.clientWidth;
     pixelsPerCm = frameWidthPx / frameWidthCm;
-    calibrationFrame.style.display = 'none';
     scaleCalibrated = true;
     alert('Scale calibrated. You can now measure areas.');
 });
