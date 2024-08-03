@@ -13,6 +13,7 @@ let scaleCalibrated = false;
 let measuring = false;
 let pixelsPerCm = 1;
 let points = [];
+let isDrawing = false;
 
 // 启动摄像头
 navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
@@ -52,6 +53,8 @@ calibrateButton.addEventListener('click', () => {
     measuring = true;
     points = [];
     canvas.addEventListener('pointerdown', startDrawing);
+    canvas.addEventListener('pointermove', draw);
+    canvas.addEventListener('pointerup', stopDrawing);
 });
 
 // 撤销上一步操作
@@ -69,6 +72,9 @@ finishButton.addEventListener('click', () => {
         const areaCm2 = areaPixels / (pixelsPerCm * pixelsPerCm);
         output.innerHTML = `Area: ${areaCm2.toFixed(2)} cm²`;
         measuring = false;
+        canvas.removeEventListener('pointerdown', startDrawing);
+        canvas.removeEventListener('pointermove', draw);
+        canvas.removeEventListener('pointerup', stopDrawing);
     } else {
         alert('You need at least 3 points to form an area.');
     }
@@ -76,23 +82,34 @@ finishButton.addEventListener('click', () => {
 
 // 开始绘制区域
 function startDrawing(event) {
-    if (!measuring) return;
+    isDrawing = true;
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
     points.push({ x, y });
     drawPoint(x, y);
-    if (points.length > 1) {
-        const prevPoint = points[points.length - 2];
-        drawLine(prevPoint.x, prevPoint.y, x, y);
-    }
+}
+
+function draw(event) {
+    if (!isDrawing || !measuring) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    points.push({ x, y });
+    drawPoint(x, y);
+    const prevPoint = points[points.length - 2];
+    drawLine(prevPoint.x, prevPoint.y, x, y);
+}
+
+function stopDrawing() {
+    isDrawing = false;
 }
 
 // 绘制标记点
 function drawPoint(x, y) {
     ctx.fillStyle = 'red';
     ctx.beginPath();
-    ctx.arc(x, y, 3, 0, 2 * Math.PI);
+    ctx.arc(x, y, 2, 0, 2 * Math.PI);
     ctx.fill();
 }
 
