@@ -55,6 +55,7 @@ calibrateButton.addEventListener('click', () => {
     canvas.addEventListener('pointerdown', startDrawing);
     canvas.addEventListener('pointermove', draw);
     canvas.addEventListener('pointerup', stopDrawing);
+    document.body.style.overflow = 'hidden'; // 防止页面滚动
 });
 
 // 撤销上一步操作
@@ -75,6 +76,7 @@ finishButton.addEventListener('click', () => {
         canvas.removeEventListener('pointerdown', startDrawing);
         canvas.removeEventListener('pointermove', draw);
         canvas.removeEventListener('pointerup', stopDrawing);
+        document.body.style.overflow = ''; // 恢复页面滚动
     } else {
         alert('You need at least 3 points to form an area.');
     }
