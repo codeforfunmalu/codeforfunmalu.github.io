@@ -18,15 +18,15 @@ let points = [];
 let lines = [];
 let undoneLines = [];
 
-// 获取相机视频流
-navigator.mediaDevices.getUserMedia({ video: true })
+// 获取相机视频流，指定使用后置摄像头
+navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: 'environment' } } })
     .then(stream => {
         video.srcObject = stream;
         return video.play();  // 开始播放视频流
     })
     .catch(err => {
         console.error("Error accessing camera: ", err);
-        alert("Could not access the camera. Please check permissions.");
+        alert("Could not access the camera. Please check permissions and try using a different browser if the problem persists.");
     });
 
 // 捕获图片并校准比例尺
