@@ -1,61 +1,49 @@
 // 获取DOM元素
-const imageInput = document.getElementById('imageInput');
+const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const output = document.getElementById('output');
-const calibrateButton = document.getElementById('calibrateButton');
+const captureButton = document.getElementById('captureButton');
 const measureButton = document.getElementById('measureButton');
 const finishButton = document.getElementById('finishButton');
 const undoButton = document.getElementById('undoButton');
+const output = document.getElementById('output');
 
-let image, scale = null, measuring = false;
-let points = [];
+const calibrationFrame = document.createElement('div');
+calibrationFrame.classList.add('calibration-frame');
+document.body.appendChild(calibrationFrame);
+
+let scale = null;
 let pixelsPerCm;
+let measuring = false;
+let points = [];
 let lines = [];
 let undoneLines = [];
 
-// 当用户选择图片时触发
-imageInput.addEventListener('change', () => {
-    const file = imageInput.files[0];
-    const reader = new FileReader();
+// 获取相机视频流
+navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+        video.srcObject = stream;
+    })
+    .catch(err => {
+        console.error("Error accessing camera: ", err);
+    });
 
-    reader.onload = () => {
-        image = new Image();
-        image.onload = () => {
-            canvas.width = image.width;
-            canvas.height = image.height;
-            ctx.drawImage(image, 0, 0);
-        };
-        image.src = reader.result;
-    };
-    reader.readAsDataURL(file);
+// 捕获图片并校准比例尺
+captureButton.addEventListener('click', () => {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+    canvas.style.display = 'block';
+    video.style.display = 'none';
+    calibrationFrame.style.display = 'none';
+
+    // 假设校准框的实际大小是8.8cm x 6.5cm
+    const actualWidthCm = 8.8;
+    const frameWidthPx = calibrationFrame.clientWidth;
+
+    pixelsPerCm = frameWidthPx / actualWidthCm;
+    alert('Scale calibrated. You can now measure areas.');
 });
-
-// 当用户点击校准比例尺按钮时触发
-calibrateButton.addEventListener('click', () => {
-    alert('Please click on the start and end points of the scale (1 cm) on the image.');
-    canvas.addEventListener('click', setScale);
-});
-
-// 设置比例尺
-function setScale(event) {
-    if (!scale) {
-        startX = event.offsetX;
-        startY = event.offsetY;
-        scale = 'start';
-        drawPoint(startX, startY);
-    } else if (scale === 'start') {
-        endX = event.offsetX;
-        endY = event.offsetY;
-        drawPoint(endX, endY);
-        drawLine(startX, startY, endX, endY);
-        const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
-        pixelsPerCm = distance; // 1 cm = distance in pixels
-        scale = null;
-        canvas.removeEventListener('click', setScale);
-        alert('Scale calibrated.');
-    }
-}
 
 // 当用户点击测量区域按钮时触发
 measureButton.addEventListener('click', () => {
@@ -173,8 +161,8 @@ function drawLine(x1, y1, x2, y2) {
 // 重新绘制画布
 function redraw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (image) {
-        ctx.drawImage(image, 0, 0);
+    if (canvas.style.display === 'block') {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     }
     lines.forEach(line => drawLine(line.start.x, line.start.y, line.end.x, line.end.y));
 }
