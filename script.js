@@ -1,4 +1,3 @@
-// 获取DOM元素
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -22,7 +21,9 @@ let undoneLines = [];
 navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: 'environment' } } })
     .then(stream => {
         video.srcObject = stream;
-        return video.play();  // 开始播放视频流
+        video.play();
+        video.style.display = 'block';
+        calibrationFrame.style.display = 'block'; // 确保校准框显示
     })
     .catch(err => {
         console.error("Error accessing camera: ", err);
@@ -31,8 +32,7 @@ navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: 'environment
 
 // 捕获图片并校准比例尺
 captureButton.addEventListener('click', () => {
-    // 确保视频已播放
-    if (video.readyState === 4) { // 4 means video is fully loaded
+    if (video.readyState === 4) { 
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         ctx.drawImage(video, 0, 0);
