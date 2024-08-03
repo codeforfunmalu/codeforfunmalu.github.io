@@ -19,9 +19,6 @@ navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
     .then(stream => {
         video.srcObject = stream;
         video.play();
-        video.onloadeddata = () => {
-            calibrationFrame.style.display = 'block'; // 显示校准框
-        };
     })
     .catch(err => {
         console.error("Error accessing camera: ", err);
@@ -36,15 +33,13 @@ captureButton.addEventListener('click', () => {
     video.style.display = 'none';
     canvas.style.display = 'block';
 
-    if (calibrationFrame.style.display === 'block') {
-        // 根据校准框的尺寸和实际尺寸计算每厘米的像素数
-        const frameWidthCm = 8.8; // 实际板子的宽度
-        const frameWidthPx = calibrationFrame.clientWidth;
-        pixelsPerCm = frameWidthPx / frameWidthCm;
-        calibrationFrame.style.display = 'none';
-        scaleCalibrated = true;
-        alert('Scale calibrated. You can now measure areas.');
-    }
+    // 根据校准框的尺寸和实际尺寸计算每厘米的像素数
+    const frameWidthCm = 8.8; // 实际板子的宽度
+    const frameWidthPx = calibrationFrame.clientWidth;
+    pixelsPerCm = frameWidthPx / frameWidthCm;
+    calibrationFrame.style.display = 'none';
+    scaleCalibrated = true;
+    alert('Scale calibrated. You can now measure areas.');
 });
 
 // 开始测量
