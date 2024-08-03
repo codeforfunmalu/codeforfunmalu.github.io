@@ -6,6 +6,7 @@ body {
     margin: 0;
     padding: 20px;
     background-color: #f0f0f0;
+    position: relative; /* 添加 position: relative; 以确保子元素的定位基于 body */
 }
 
 h1 {
@@ -17,18 +18,23 @@ video, #canvas {
     height: auto;
     margin-top: 20px;
     border: 1px solid black;
-    display: none;
+}
+
+video {
+    position: relative; /* 确保 video 是参照的基准 */
+    display: block; /* 确保视频元素显示 */
 }
 
 .calibration-frame {
     position: absolute;
-    top: 0;
+    top: 0; 
     left: 0;
     width: 176px; /* 按8.8 cm 的比例 */
     height: 130px; /* 按6.5 cm 的比例 */
     border: 2px solid #00FF00; /* 亮绿色 */
     pointer-events: none; /* 确保框框不干扰用户操作 */
     z-index: 10; /* 确保框框在预览画面之上 */
+    display: none; /* 初始状态隐藏 */
 }
 
 button {
