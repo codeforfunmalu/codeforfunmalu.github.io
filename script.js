@@ -80,21 +80,25 @@ finishButton.addEventListener('click', () => {
     }
 });
 
-// 开始绘制区域
-function startDrawing(event) {
-    isDrawing = true;
+// 获取相对触摸位置
+function getRelativeTouchPos(event) {
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
+    return { x, y };
+}
+
+// 开始绘制区域
+function startDrawing(event) {
+    isDrawing = true;
+    const { x, y } = getRelativeTouchPos(event);
     points.push({ x, y });
     drawPoint(x, y);
 }
 
 function draw(event) {
     if (!isDrawing || !measuring) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+    const { x, y } = getRelativeTouchPos(event);
     points.push({ x, y });
     drawPoint(x, y);
     const prevPoint = points[points.length - 2];
@@ -129,7 +133,7 @@ function redrawCanvas() {
     for (let i = 0; i < points.length; i++) {
         drawPoint(points[i].x, points[i].y);
         if (i > 0) {
-            drawLine(points[i - 1].x, points[i - 1].y, points[i].x, points[i].y);
+            drawLine(points[i - 1].x, points[i].y, points[i].x, points[i].y);
         }
     }
 }
