@@ -13,6 +13,7 @@ let scaleCalibrated = false;
 let measuring = false;
 let pixelsPerCm = 1;
 let points = [];
+let lines = [];
 let isDrawing = false;
 
 // 启动摄像头
@@ -43,7 +44,7 @@ captureButton.addEventListener('click', () => {
     alert('Scale calibrated. You can now measure areas.');
 });
 
-// 开始测量
+// 启动测量并添加事件监听器
 calibrateButton.addEventListener('click', () => {
     if (!scaleCalibrated) {
         alert('Please capture the image and calibrate the scale first.');
@@ -52,6 +53,7 @@ calibrateButton.addEventListener('click', () => {
     alert('Draw the area to measure on the image.');
     measuring = true;
     points = [];
+    lines = [];
     canvas.addEventListener('pointerdown', startDrawing);
     canvas.addEventListener('pointermove', draw);
     canvas.addEventListener('pointerup', stopDrawing);
@@ -82,40 +84,49 @@ finishButton.addEventListener('click', () => {
     }
 });
 
-// 获取相对触摸位置
-function getRelativeTouchPos(event) {
-    const rect = canvas.getBoundingClientRect();
-    const x = (event.clientX - rect.left) * (canvas.width / rect.width);
-    const y = (event.clientY - rect.top) * (canvas.height / rect.height);
-    return { x, y };
+// 获取触控或鼠标位置
+function getEventPosition(event) {
+    if (event.touches) {
+        return {
+            offsetX: event.touches[0].clientX - canvas.getBoundingClientRect().left,
+            offsetY: event.touches[0].clientY - canvas.getBoundingClientRect().top
+        };
+    }
+    return {
+        offsetX: event.offsetX,
+        offsetY: event.offsetY
+    };
 }
 
-// 开始绘制区域
+// 开始绘制
 function startDrawing(event) {
+    if (!measuring) return;
+    const { offsetX, offsetY } = getEventPosition(event);
+    points.push({ x: offsetX, y: offsetY });
+    drawPoint(offsetX, offsetY);
     isDrawing = true;
-    const { x, y } = getRelativeTouchPos(event);
-    points.push({ x, y });
-    drawPoint(x, y);
 }
 
+// 绘制线条
 function draw(event) {
-    if (!isDrawing || !measuring) return;
-    const { x, y } = getRelativeTouchPos(event);
-    points.push({ x, y });
-    drawPoint(x, y);
-    const prevPoint = points[points.length - 2];
-    drawLine(prevPoint.x, prevPoint.y, x, y);
+    if (!measuring || !isDrawing || points.length === 0) return;
+    const { offsetX, offsetY } = getEventPosition(event);
+    const lastPoint = points[points.length - 1];
+    drawLine(lastPoint.x, lastPoint.y, offsetX, offsetY);
+    points.push({ x: offsetX, y: offsetY });
 }
 
-function stopDrawing() {
+// 停止绘制
+function stopDrawing(event) {
+    if (!measuring) return;
     isDrawing = false;
 }
 
-// 绘制标记点
+// 绘制点
 function drawPoint(x, y) {
     ctx.fillStyle = 'red';
     ctx.beginPath();
-    ctx.arc(x, y, 2, 0, 2 * Math.PI);
+    ctx.arc(x, y, 3, 0, 2 * Math.PI);
     ctx.fill();
 }
 
@@ -135,7 +146,7 @@ function redrawCanvas() {
     for (let i = 0; i < points.length; i++) {
         drawPoint(points[i].x, points[i].y);
         if (i > 0) {
-            drawLine(points[i - 1].x, points[i].y, points[i].x, points[i].y);
+            drawLine(points[i - 1].x, points[i - 1].y, points[i].x, points[i].y);
         }
     }
 }
