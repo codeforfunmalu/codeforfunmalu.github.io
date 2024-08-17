@@ -26,9 +26,8 @@ h1 {
 #video {
     width: 100%;
     height: 100%;
-    z-index: 1; /* 确保视频预览在框框下方 */
-    position: relative;
-    display: block;
+    position: relative; /* 确保视频在页面中正确定位 */
+    display: block; /* 确保视频显示 */
 }
 
 .calibration-frame {
@@ -39,9 +38,10 @@ h1 {
     height: 27%; /* 相对于预览画面的高度 */
     border: 2px solid #00FF00; /* 亮绿色 */
     pointer-events: none; /* 确保框框不干扰用户操作 */
-    z-index: 2; /* 使框框在视频预览之上 */
     transform: translate(-50%, -50%); /* 使框框居中 */
+    /* 移除 z-index 以排除层级问题 */
 }
+
 
 #canvas {
     display: none;
