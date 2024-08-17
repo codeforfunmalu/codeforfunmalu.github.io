@@ -18,7 +18,7 @@ h1 {
     position: relative;
     width: 100%;
     max-width: 640px; /* 设置视频容器的最大宽度 */
-    height: auto;
+    height: 480px; /* 固定视频容器的高度 */
     background-color: black; /* 视频容器的背景颜色 */
     overflow: hidden;
 }
