@@ -52,6 +52,7 @@ calibrateButton.addEventListener('click', () => {
     alert('Draw the area to measure on the image.');
     measuring = true;
     points = [];
+    canvas.style.touchAction = 'none'; // 禁止浏览器对触控行为的默认处理
     canvas.addEventListener('pointerdown', startDrawing, { passive: false });
     canvas.addEventListener('pointermove', draw, { passive: false });
     canvas.addEventListener('pointerup', stopDrawing, { passive: false });
@@ -82,9 +83,9 @@ finishButton.addEventListener('click', () => {
     }
 });
 
-// 获取相对触摸位置
+// 获取触控或鼠标位置
 function getEventPosition(event) {
-    event.preventDefault(); // 防止默认的滚动行为
+    event.preventDefault(); // 禁止默认的滚动行为
     if (event.touches) {
         return {
             offsetX: event.touches[0].clientX - canvas.getBoundingClientRect().left,
@@ -99,6 +100,7 @@ function getEventPosition(event) {
 
 // 开始绘制区域
 function startDrawing(event) {
+    event.preventDefault(); // 禁止默认的滚动行为
     if (!measuring) return;
     const { offsetX, offsetY } = getEventPosition(event);
     points.push({ x: offsetX, y: offsetY });
@@ -107,6 +109,7 @@ function startDrawing(event) {
 }
 
 function draw(event) {
+    event.preventDefault(); // 禁止默认的滚动行为
     if (!measuring || !isDrawing || points.length === 0) return;
     const { offsetX, offsetY } = getEventPosition(event);
     const lastPoint = points[points.length - 1];
@@ -114,14 +117,15 @@ function draw(event) {
     points.push({ x: offsetX, y: offsetY });
 }
 
-function stopDrawing() {
+function stopDrawing(event) {
+    event.preventDefault(); // 禁止默认的滚动行为
     isDrawing = false;
 }
 
 // 绘制标记点
 function drawPoint(x, y) {
     ctx.fillStyle = 'red';
-    ctx.beginPath;
+    ctx.beginPath();
     ctx.arc(x, y, 3, 0, Math.PI * 2);
     ctx.fill();
 }
