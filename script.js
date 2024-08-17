@@ -155,10 +155,13 @@ function redrawCanvas() {
 function calculatePolygonArea(points) {
     let area = 0;
     const n = points.length;
+    if (n < 3) return 0; // 如果点数少于3，无法形成多边形
+
     for (let i = 0; i < n; i++) {
-        const { x: x1, y: y1 } = points[i];
-        const { x: x2, y: y2 } = points[(i + 1) % n];
-        area += x1 * y2 - y1 * x2;
+        let j = (i + 1) % n; // 循环到第一个点
+        const x1 = points[i].x, y1 = points[i].y;
+        const x2 = points[j].x, y2 = points[j].y;
+        area += (x1 * y2 - y1 * x2);
     }
     return Math.abs(area) / 2;
 }
