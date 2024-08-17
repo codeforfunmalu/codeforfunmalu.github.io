@@ -31,13 +31,14 @@ video {
 
 .calibration-frame {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 176px; /* 8.8 cm 的实际宽度 */
-    height: 130px; /* 6.5 cm 的实际高度 */
+    top: 50%; 
+    left: 50%;
+    width: 27.5%; /* 相对于预览画面的宽度 */
+    height: 27%; /* 相对于预览画面的高度 */
     border: 2px solid #00FF00; /* 亮绿色 */
     pointer-events: none; /* 确保框框不干扰用户操作 */
     z-index: 10; /* 确保框框在预览画面之上 */
+    transform: translate(-50%, -50%); /* 使框框居中 */
 }
 
 #canvas {
