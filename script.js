@@ -11,7 +11,7 @@ const calibrationFrame = document.querySelector('.calibration-frame');
 
 let scaleCalibrated = false;
 let measuring = false;
-let pixelsPerCm = 1;
+let pixelsPerSquareCm = 1;
 let points = [];
 let isDrawing = false;
 
@@ -35,10 +35,14 @@ captureButton.addEventListener('click', () => {
     canvas.style.display = 'block';
     calibrationFrame.style.display = 'none';
 
-    // 根据校准框的尺寸和实际尺寸计算每厘米的像素数
-    const frameWidthCm = 8.8; // 实际板子的宽度
-    const frameWidthPx = calibrationFrame.clientWidth;
-    pixelsPerCm = frameWidthPx / frameWidthCm;
+    // 根据校准框的尺寸和实际面积计算每平方厘米的像素数
+    const frameWidthCm = 8.8; // 实际板子的宽度, cm
+    const frameHeightCm = 6.5; // 实际板子的高度, cm
+    const frameAreaCm2 = frameWidthCm * frameHeightCm; // 实际板子面积, cm²
+    const frameWidthPx = calibrationFrame.clientWidth; // 屏幕上的宽度, px
+    const frameHeightPx = calibrationFrame.clientHeight; // 屏幕上的高度, px
+    const frameAreaPx = frameWidthPx * frameHeightPx; // 屏幕上的面积, px²
+    pixelsPerSquareCm = frameAreaPx / frameAreaCm2; // 每平方厘米的像素数
     scaleCalibrated = true;
     alert('Scale calibrated. You can now measure areas.');
 });
@@ -71,7 +75,7 @@ undoButton.addEventListener('click', () => {
 finishButton.addEventListener('click', () => {
     if (points.length > 2) {
         const areaPixels = calculatePolygonArea(points);
-        const areaCm2 = areaPixels / (pixelsPerCm * pixelsPerCm);
+        const areaCm2 = areaPixels / pixelsPerSquareCm;
         output.innerHTML = `Area: ${areaCm2.toFixed(2)} cm²`;
         measuring = false;
         canvas.removeEventListener('pointerdown', startDrawing);
