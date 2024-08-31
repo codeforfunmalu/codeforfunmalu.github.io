@@ -6,8 +6,6 @@ body {
     margin: 0;
     padding: 20px;
     background-color: #f0f0f0;
-    position: relative;
-    overflow: hidden; /* Prevent scrolling */
 }
 
 h1 {
@@ -31,18 +29,17 @@ video {
     position: absolute;
     top: 0;
     left: 0;
-    width: 176px; /* Width corresponding to 8.8 cm */
-    height: 130px; /* Height corresponding to 6.5 cm */
-    border: 2px solid #00FF00; /* Bright green border */
+    width: 176px; /* Calibration frame width */
+    height: 130px; /* Calibration frame height */
+    border: 2px solid #00FF00; /* Calibration frame highlighted */
     pointer-events: none; /* Prevent interaction */
-    z-index: 10;
 }
 
 #canvas {
-    display: none;
-    width: 640px; /* Fixed width to match video */
-    height: 480px; /* Fixed height to match video */
+    width: 640px;
+    height: 480px;
     border: 1px solid black;
+    display: none; /* Initially hidden */
 }
 
 button {
