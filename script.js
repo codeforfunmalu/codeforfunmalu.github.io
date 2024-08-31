@@ -41,11 +41,9 @@ captureButton.addEventListener('click', () => {
     const frameHeightCm = 6.5; // 實際板子的高度
     const frameWidthPx = calibrationFrame.clientWidth;
     const frameHeightPx = calibrationFrame.clientHeight;
-    const pixelsPerCmWidth = frameWidthPx / frameWidthCm;
-    const pixelsPerCmHeight = frameHeightPx / frameHeightCm;
-
-    // 選擇較精確的像素比率
-    pixelsPerCm = (pixelsPerCmWidth + pixelsPerCmHeight) / 2;
+    
+    // 使用寬度來計算比例尺
+    pixelsPerCm = frameWidthPx / frameWidthCm;
 
     scaleCalibrated = true;
     alert('比例尺已校準。現在可以測量面積。');
@@ -90,7 +88,7 @@ finishButton.addEventListener('click', () => {
         }
 
         const areaPixels = calculatePolygonArea(points);
-        const areaCm2 = areaPixels / (pixelsPerCm * pixelsPerCm);
+        const areaCm2 = areaPixels / (pixelsPerCm * pixelsPerCm);  // 確保以平方厘米為單位計算
         output.innerHTML = `面積: ${areaCm2.toFixed(2)} 平方厘米`;
         measuring = false;
         canvas.removeEventListener('pointerdown', startDrawing);
