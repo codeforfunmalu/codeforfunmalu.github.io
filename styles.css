@@ -7,7 +7,7 @@ body {
     padding: 20px;
     background-color: #f0f0f0;
     position: relative;
-    overflow: hidden; /* Prevent scrolling */
+    overflow: hidden; /* 防止滾動 */
 }
 
 h1 {
@@ -16,8 +16,8 @@ h1 {
 
 #video-container {
     position: relative;
-    width: 640px; /* Fixed width */
-    height: 480px; /* Fixed height */
+    width: 640px; /* 固定寬度 */
+    height: 480px; /* 固定高度 */
     overflow: hidden;
 }
 
@@ -31,17 +31,17 @@ video {
     position: absolute;
     top: 0;
     left: 0;
-    width: 176px; /* Width corresponding to 8.8 cm */
-    height: 130px; /* Height corresponding to 6.5 cm */
-    border: 2px solid #00FF00; /* Bright green border */
-    pointer-events: none; /* Prevent interaction */
+    width: 176px; /* 對應8.8cm的寬度 */
+    height: 130px; /* 對應6.5cm的高度 */
+    border: 2px solid #00FF00; /* 亮綠色框框 */
+    pointer-events: none; /* 防止互動 */
     z-index: 10;
 }
 
 #canvas {
     display: none;
-    width: 640px; /* Fixed width to match video */
-    height: 480px; /* Fixed height to match video */
+    width: 640px; /* 固定寬度以匹配影片 */
+    height: 480px; /* 固定高度以匹配影片 */
     border: 1px solid black;
 }
 

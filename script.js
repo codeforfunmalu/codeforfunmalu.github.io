@@ -1,4 +1,4 @@
-// 获取 DOM 元素
+// 獲取 DOM 元素
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -13,9 +13,10 @@ let scaleCalibrated = false;
 let measuring = false;
 let pixelsPerCm = 1;
 let points = [];
+let lines = [];
 let isDrawing = false;
 
-// 启动摄像头
+// 啟動攝像頭
 navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: 640, height: 480 } })
     .then(stream => {
         video.srcObject = stream;
@@ -23,10 +24,10 @@ navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width:
     })
     .catch(err => {
         console.error("Error accessing camera: ", err);
-        alert("Could not access the camera. Please check permissions and try using a different browser if the problem persists.");
+        alert("無法存取攝像頭。請檢查權限並嘗試使用不同的瀏覽器。");
     });
 
-// 捕获图像和校准
+// 捕捉圖像和校準
 captureButton.addEventListener('click', () => {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -35,57 +36,92 @@ captureButton.addEventListener('click', () => {
     canvas.style.display = 'block';
     calibrationFrame.style.display = 'none';
 
-    // 根据校准框的尺寸和实际尺寸计算每厘米的像素数
-    const frameWidthCm = 8.8; // 实际板子的宽度
+    // 根據校準框的尺寸和實際尺寸計算每厘米的像素數
+    const frameWidthCm = 8.8; // 實際板子的寬度
+    const frameHeightCm = 6.5; // 實際板子的高度
     const frameWidthPx = calibrationFrame.clientWidth;
-    pixelsPerCm = frameWidthPx / frameWidthCm;
+    const frameHeightPx = calibrationFrame.clientHeight;
+    const pixelsPerCmWidth = frameWidthPx / frameWidthCm;
+    const pixelsPerCmHeight = frameHeightPx / frameHeightCm;
+
+    // 選擇較精確的像素比率
+    pixelsPerCm = (pixelsPerCmWidth + pixelsPerCmHeight) / 2;
+
     scaleCalibrated = true;
-    alert('Scale calibrated. You can now measure areas.');
+    alert('比例尺已校準。現在可以測量面積。');
 });
 
-// 开始测量
+// 開始測量
 calibrateButton.addEventListener('click', () => {
     if (!scaleCalibrated) {
-        alert('Please capture the image and calibrate the scale first.');
+        alert('請先捕捉圖像並校準比例尺。');
         return;
     }
-    alert('Draw the area to measure on the image.');
+    alert('在圖像上繪製要測量的區域。');
     measuring = true;
     points = [];
-    canvas.style.touchAction = 'none'; // 禁止浏览器对触控行为的默认处理
+    lines = [];
+    canvas.style.touchAction = 'none'; // 禁止瀏覽器對觸控行為的預設處理
     canvas.addEventListener('pointerdown', startDrawing, { passive: false });
     canvas.addEventListener('pointermove', draw, { passive: false });
     canvas.addEventListener('pointerup', stopDrawing, { passive: false });
-    document.body.style.overflow = 'hidden'; // 防止页面滚动
+    document.body.style.overflow = 'hidden'; // 防止頁面滾動
 });
 
-// 撤销上一步操作
+// 撤銷上一步操作
 undoButton.addEventListener('click', () => {
     if (points.length > 0) {
-        points.pop(); // 删除最后一个点
-        redrawCanvas(); // 重绘画布
+        points.pop(); // 刪除最後一個點
+        lines.pop(); // 刪除最後一條線
+        redrawCanvas(); // 重繪畫布
     }
 });
 
-// 完成测量
+// 完成測量
 finishButton.addEventListener('click', () => {
     if (points.length > 2) {
         const areaPixels = calculatePolygonArea(points);
         const areaCm2 = areaPixels / (pixelsPerCm * pixelsPerCm);
-        output.innerHTML = `Area: ${areaCm2.toFixed(2)} cm²`;
+        output.innerHTML = `面積: ${areaCm2.toFixed(2)} 平方厘米`;
         measuring = false;
         canvas.removeEventListener('pointerdown', startDrawing);
         canvas.removeEventListener('pointermove', draw);
         canvas.removeEventListener('pointerup', stopDrawing);
-        document.body.style.overflow = ''; // 恢复页面滚动
+        document.body.style.overflow = ''; // 恢復頁面滾動
     } else {
-        alert('You need at least 3 points to form an area.');
+        alert('至少需要三個點才能形成區域。');
     }
 });
 
-// 获取触控或鼠标位置
+// 開始繪製
+function startDrawing(event) {
+    event.preventDefault(); // 防止預設的滾動行為
+    if (!measuring) return;
+    const { offsetX, offsetY } = getEventPosition(event);
+    points.push({ x: offsetX, y: offsetY });
+    drawPoint(offsetX, offsetY);
+    isDrawing = true;
+}
+
+// 繪製線條
+function draw(event) {
+    event.preventDefault(); // 防止預設的滾動行為
+    if (!measuring || !isDrawing || points.length === 0) return;
+    const { offsetX, offsetY } = getEventPosition(event);
+    const lastPoint = points[points.length - 1];
+    drawLine(lastPoint.x, lastPoint.y, offsetX, offsetY);
+    points.push({ x: offsetX, y: offsetY });
+    lines.push({ start: lastPoint, end: { x: offsetX, y: offsetY } });
+}
+
+// 停止繪製
+function stopDrawing(event) {
+    event.preventDefault(); // 防止預設的滾動行為
+    isDrawing = false;
+}
+
+// 獲取觸控或鼠標位置
 function getEventPosition(event) {
-    event.preventDefault(); // 禁止默认的滚动行为
     if (event.touches) {
         return {
             offsetX: event.touches[0].clientX - canvas.getBoundingClientRect().left,
@@ -98,39 +134,15 @@ function getEventPosition(event) {
     };
 }
 
-// 开始绘制区域
-function startDrawing(event) {
-    event.preventDefault(); // 禁止默认的滚动行为
-    if (!measuring) return;
-    const { offsetX, offsetY } = getEventPosition(event);
-    points.push({ x: offsetX, y: offsetY });
-    drawPoint(offsetX, offsetY);
-    isDrawing = true;
-}
-
-function draw(event) {
-    event.preventDefault(); // 禁止默认的滚动行为
-    if (!measuring || !isDrawing || points.length === 0) return;
-    const { offsetX, offsetY } = getEventPosition(event);
-    const lastPoint = points[points.length - 1];
-    drawLine(lastPoint.x, lastPoint.y, offsetX, offsetY);
-    points.push({ x: offsetX, y: offsetY });
-}
-
-function stopDrawing(event) {
-    event.preventDefault(); // 禁止默认的滚动行为
-    isDrawing = false;
-}
-
-// 绘制标记点
+// 繪製點
 function drawPoint(x, y) {
     ctx.fillStyle = 'red';
     ctx.beginPath();
-    ctx.arc(x, y, 3, 0, Math.PI * 2);
+    ctx.arc(x, y, 3, 0, 2 * Math.PI);
     ctx.fill();
 }
 
-// 绘制线
+// 繪製線條
 function drawLine(x1, y1, x2, y2) {
     ctx.strokeStyle = 'blue';
     ctx.beginPath();
@@ -139,29 +151,24 @@ function drawLine(x1, y1, x2, y2) {
     ctx.stroke();
 }
 
-// 重新绘制画布上的内容
+// 重新繪製畫布內容
 function redrawCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < points.length; i++) {
-        drawPoint(points[i].x, points[i].y);
-        if (i > 0) {
-            drawLine(points[i - 1].x, points[i - 1].y, points[i].x, points[i].y);
-        }
-    }
+    lines.forEach(line => drawLine(line.start.x, line.start.y, line.end.x, line.end.y));
+    points.forEach(point => drawPoint(point.x, point.y));
 }
 
-// 计算多边形面积
+// 計算多邊形面積
 function calculatePolygonArea(points) {
     let area = 0;
     const n = points.length;
-    if (n < 3) return 0; // 如果点数少于3，无法形成多边形
+    if (n < 3) return 0; // 需要至少3個點才能形成多邊形
 
     for (let i = 0; i < n; i++) {
-        let j = (i + 1) % n; // 循环到第一个点
-        const x1 = points[i].x, y1 = points[i].y;
-        const x2 = points[j].x, y2 = points[j].y;
-        area += (x1 * y2 - y1 * x2);
+        const { x: x1, y: y1 } = points[i];
+        const { x: x2, y: y2 } = points[(i + 1) % n];
+        area += x1 * y2 - y1 * x2;
     }
     return Math.abs(area) / 2;
 }
