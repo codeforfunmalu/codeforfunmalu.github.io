@@ -80,6 +80,15 @@ undoButton.addEventListener('click', () => {
 // 完成測量
 finishButton.addEventListener('click', () => {
     if (points.length > 2) {
+        // 自動連接第一個點和最後一個點以形成封閉的多邊形
+        const firstPoint = points[0];
+        const lastPoint = points[points.length - 1];
+        if (firstPoint.x !== lastPoint.x || firstPoint.y !== lastPoint.y) {
+            points.push({ x: firstPoint.x, y: firstPoint.y });
+            drawLine(lastPoint.x, lastPoint.y, firstPoint.x, firstPoint.y);
+            lines.push({ start: lastPoint, end: { x: firstPoint.x, y: firstPoint.y } });
+        }
+
         const areaPixels = calculatePolygonArea(points);
         const areaCm2 = areaPixels / (pixelsPerCm * pixelsPerCm);
         output.innerHTML = `面積: ${areaCm2.toFixed(2)} 平方厘米`;
