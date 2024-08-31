@@ -8,12 +8,15 @@
 </head>
 <body>
     <h1>Area Measurement Tool</h1>
-    <input type="file" id="imageInput" accept="image/*">
+    <div id="video-container">
+        <video id="video" autoplay></video>
+        <div class="calibration-frame"></div>
+    </div>
     <canvas id="canvas"></canvas>
-    <button id="calibrateButton">Calibrate Scale</button>
-    <button id="measureButton">Measure Area</button>
+    <button id="captureButton">Capture and Calibrate</button>
+    <button id="calibrateButton">Measure Area</button>
     <button id="finishButton">Finish Measurement</button>
-    <button id="undoButton">Undo</button>
+    <button id="undoButton">Undo Last Action</button>
     <div id="output"></div>
     <script src="script.js"></script>
 </body>
