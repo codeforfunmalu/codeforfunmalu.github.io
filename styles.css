@@ -1,4 +1,3 @@
-/* Global styles */
 body {
     font-family: Arial, sans-serif;
     display: flex;
@@ -7,25 +6,49 @@ body {
     margin: 0;
     padding: 20px;
     background-color: #f0f0f0;
+    position: relative;
+    overflow: hidden; /* Prevent scrolling */
 }
 
-/* Title styles */
 h1 {
     margin-bottom: 20px;
 }
 
-/* Canvas styles */
-#canvas {
-    border: 1px solid black;
-    margin-top: 20px;
+#video-container {
+    position: relative;
+    width: 640px; /* Fixed width */
+    height: 480px; /* Fixed height */
+    overflow: hidden;
 }
 
-/* Button styles */
+video {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.calibration-frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 176px; /* Width corresponding to 8.8 cm */
+    height: 130px; /* Height corresponding to 6.5 cm */
+    border: 2px solid #00FF00; /* Bright green border */
+    pointer-events: none; /* Prevent interaction */
+    z-index: 10;
+}
+
+#canvas {
+    display: none;
+    width: 640px; /* Fixed width to match video */
+    height: 480px; /* Fixed height to match video */
+    border: 1px solid black;
+}
+
 button {
     margin-top: 10px;
 }
 
-/* Output styles */
 #output {
     margin-top: 20px;
     font-size: 1.2em;
